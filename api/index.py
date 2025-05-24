@@ -1,20 +1,10 @@
-from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
-import json
-import os
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 
-app = FastAPI()
+app = Flask(__name__)
+CORS(app)
 
-# Allow CORS from any origin
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["GET"],
-    allow_headers=["*"],
-)
-
-# Load student marks from JSON file
+# Your original list of students
 student_data = [
   {
     "name": "vA",
@@ -417,10 +407,14 @@ student_data = [
     "marks": 9
   }
 ]
-student_marks = {entry["name"]: entry["marks"] for entry in student_data}
+# Convert list to dictionary for fast lookup
+students = {student["name"]: student["marks"] for student in students_list}
 
-@app.get("/api")
-async def get_marks(request: Request):
-    names = request.query_params.getlist("name")
-    marks = [student_marks.get(name, None) for name in names]
-    return JSONResponse(content={"marks": marks})
+@app.route('/', methods=['GET'])
+def get_marks():
+    names = request.args.getlist('name')
+    marks = [students.get(name, 0) for name in names]
+    return jsonify({"marks": marks})
+
+if __name__ == '__main__':
+    app.run()
