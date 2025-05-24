@@ -5,7 +5,7 @@ app = Flask(__name__)
 CORS(app)
 
 # Your original list of students
-student_data = [
+students_list = [
   {
     "name": "vA",
     "marks": 75
